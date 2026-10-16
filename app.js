@@ -12,6 +12,7 @@ const alineado = document.getElementById("alineado");
 const pago = document.getElementById("pago");
 
 const btnPresupuesto = document.getElementById("btnPresupuesto");
+const btnLimpiar = document.getElementById("btnLimpiar");
 
 const divPresupuesto = document.getElementById("presupuesto");
 const mensaje = document.getElementById("mensaje");
@@ -44,9 +45,14 @@ btnPresupuesto.addEventListener('click', () => {
     generarPresupuesto();
 });
 
+btnLimpiar.addEventListener('click', () => {resetearParametros()});
+
 //***** FUNCIONES *****/
 
 function generarPresupuesto() {
+
+  resetearParametros();
+
   try {
     if(verificacionDatos()) {
 
@@ -89,7 +95,7 @@ function generarPresupuesto() {
       
       let total = baseConDescuento + conRecargo + IVA
 
-      divPresupuesto.innerHTML = `<h1>Presupuesto para ${nombre.value} - ${matricula.value}</h1><br> <p>Servicio - Cantidad - Importe</p>`;
+      let contenido = `<h1>Presupuesto para ${nombre.value} - ${matricula.value}</h1><br> <table> <tr> <th>Servicio</th> <th>Cantidad</th> <th>Importe</th></tr>`;
       
       for (let i = 0; i < servicios.length; i++) {
           let servicio = new Object();
@@ -101,16 +107,20 @@ function generarPresupuesto() {
               cont++
           } while(cont<SERVICIOS.length && servicio.id != servicios[i].servicio)
 
-          divPresupuesto.innerHTML += `${servicio.nombre} - ${servicios[i].cantidad} - ${(servicios[i].cantidad * servicio.precio)}&euro;<br>`;
+          contenido += `<tr> <td> ${servicio.nombre} </td> <td> ${servicios[i].cantidad} </td> <td> ${(servicios[i].cantidad * servicio.precio)}&euro; </td> </tr>`;
         
 
       }
 
-      divPresupuesto.innerHTML += `<p>Base (vehículo x${obtenerMultiplicador(vehiculo.value)}): ${base}&euro;</p>`;
-      divPresupuesto.innerHTML += `<p>Descuento (${obtenerDescuento(base)}%): -${(base*obtenerDescuento(base))/100}&euro;</p>`;
-      divPresupuesto.innerHTML += `<p>Recargo por pago (${pago.value=="financiado"?"5":"0"}%): +${conRecargo}&euro;</p>`;
-      divPresupuesto.innerHTML += `<p>IVA (${IVA*100}%): +${(baseConDescuento*(IVA*100))/100}&euro;</p>`;
+      contenido += `</table>`;
+      contenido += `<p>Base (vehículo x${obtenerMultiplicador(vehiculo.value)}): ${base}&euro;</p>`;
+      contenido += `<p>Descuento (${obtenerDescuento(base)}%): -${(base*obtenerDescuento(base))/100}&euro;</p>`;
+      contenido += `<p>Recargo por pago (${pago.value=="financiado"?"5":"0"}%): +${conRecargo}&euro;</p>`;
+      contenido += `<p>IVA (${IVA*100}%): +${baseConIva.toFixed(2)}&euro;</p>`;
 
+      mensaje.innerHTML = "Presupuesto generado correctamente";
+
+      divPresupuesto.innerHTML = contenido;
 
       mensajeTotal.value = total + " €";
 
@@ -217,7 +227,7 @@ function verificacionDatos() {
   if((vehiculo.value=="")&&(pago.value==""))
     throw new Error("Se debe seleccionar vehículo y la forma de pago");
 
-  if((aceite.value<0 || aceite.value>4) && (filtros.value<0 || filtros.value>4) && (frenos.value<0 || frenos.value>4) && (neumaticos.value<0 || neumaticos.value>4) && (alineado.value<0 || alineado.value>4))
+  if((aceite.value<0 || aceite.value>4) || (filtros.value<0 || filtros.value>4) || (frenos.value<0 || frenos.value>4) || (neumaticos.value<0 || neumaticos.value>4) || (alineado.value<0 || alineado.value>4))
     throw new Error("Las cantidades deben tener un valor entero entre 0 y 4");
 
   if((aceite.value==0) && (filtros.value==0) && (frenos.value==0) && (neumaticos.value==0) && (alineado.value==0))
@@ -228,4 +238,21 @@ function verificacionDatos() {
 
 
   return true;
+}
+
+/**
+ * Función para resetear todos los parámetros del formulario
+ */
+function resetearParametros() {
+  nombre.value="";
+  matricula.value="";
+  vehiculo.value = "";
+  aceite.value = 0;
+  filtros.value = 0;
+  frenos.value = 0;
+  neumaticos.value = 0;
+  alineado.value = 0;
+  pago.value = "";
+  mensajeTotal.value = "";
+
 }
