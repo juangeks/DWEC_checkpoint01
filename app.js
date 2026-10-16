@@ -24,7 +24,7 @@ const MULTSUV = 1.2;
 const MULTFURGONETA = 1.35;
 
 const DESCUENTO10 = 0.10;
-const DESCUENTO5 = 0.5;
+const DESCUENTO5 = 0.05;
 
 const RECARGOFINANCIACION = 0.5;
 
@@ -169,9 +169,9 @@ function obtenerDescuento(base) {
   let descuento = 0;
 
   if(base>=300)
-    descuento = DESCUENTO10*10;
+    descuento = DESCUENTO10*100;
   else if((base>=150) && (base<=299.99))
-    descuento = DESCUENTO5*10;
+    descuento = DESCUENTO5*100;
 
   return descuento;
 }
